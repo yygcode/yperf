@@ -1,0 +1,12 @@
+#+TITLE: Log System
+#+DATE: 2018-12-01
+#+AUTHOR: yonggang.yyg
+
+* Reference Material
+- apache log4j ::
+  https://logging.apache.org/log4j/2.x/
+- miloyip/itoa-benchmark ::
+  https://github.com/miloyip/itoa-benchmark
+- myself old version ::
+  https://github.com/yygcode/ycc/blob/master/src/include/ycc/common/log.h
+  https://github.com/yygcode/ycc/blob/master/src/common/log.c

@@ -1,0 +1,38 @@
+#+TITLE: GCC Inline Asm Format
+#+DATE: 2018-12-15
+
+* Format
+#+BEGIN_SRC C
+  /*
+   ,* Inline assembly format
+   ,* asm [volatile] ( AssemblerTemplate
+   ,*                 : OutputOperands
+   ,*                 [ : InputOperands
+   ,*                 [ : Clobbers ] ])
+   ,*
+   ,* asm [volatile] goto ( AssemblerTemplate
+   ,*                      :
+   ,*                      : InputOperands
+   ,*                      : Clobbers
+   ,*                      : GotoLabels)
+   ,*/
+#+END_SRC
+
+* xcmpchg
+#+BEGIN_SRC C
+  /*
+   ,* Code Technology Description:
+   ,* - "=a" : use %eax, only write output
+   ,* - "+m" : use variable's memory location, both read and write to
+   ,* - "r"  : use any general-purpose register
+   ,* - "0"  : tells compiler use first named register save @_old, so
+   ,*          @_old and @_ret use the same register.
+   ,* - "memory" : barrier
+   ,*
+   ,* ATT cmpxchgl v1, v2: compare @eax with @v2, and
+   ,*                      1. if equal: set @v1 to @v2, set @_old to @eax
+   ,*                      2. if diff:  set @v2 to @eax
+   ,* And last save %eax to @ret
+   ,* CodeRegMap: %1=v2/ptr; %2=v1/_new; out=_ret.
+   ,*/
+#+END_SRC
