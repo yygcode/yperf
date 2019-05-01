@@ -1,38 +1,31 @@
 /*
- * compiler.h: macro definition of compiler options
+ * compiler.h: compiler relative definitions
  *
  * Copyright (C) 2012-2020 yanyg (yygcode@gmail.com, cppgp@qq.com)
  *
- * Visit https://github.com/yygcode/ycc for first version.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; see the file COPYING, if not see
- * <http://www.gnu.org/licenses/>.
+ * SPDX-License-Identifier: GPL-2.0-or-later<https://spdx.org/licenses/>
+ * Also see https://www.gnu.org/licenses/gpl-2.0.en.html
  */
 
 #pragma once
 
-#ifndef __y_begin_extern_c
+#include <inttypes.h>
+#include <stdbool.h>
+#include <stdint.h>
+
+#include <sys/cdefs.h>
+
+#ifndef __BEGIN_DECLS
 #ifdef __cplusplus
-#define __y_begin_extern_c extern "C" {
-#define __y_end_extern_c }
+#define __BEGIN_DECLS extern "C" {
+#define __END_DECLS }
 #else
-#define __y_begin_extern_c
-#define __y_end_extern_c
+#define __BEGIN_DECLS
+#define __END_DECLS
 #endif
 #endif
 
-__y_begin_extern_c
+__BEGIN_DECLS
 
 #if !defined(__clang__) && !defined(__GNUC__)
 #error "Unsupport compiler, only support gcc or clang."
@@ -42,7 +35,7 @@ __y_begin_extern_c
 #error "Unsupport platform, only test in x86_64 platform."
 #endif
 
-/* Always turn on SMP lock prefix */
+/* Y_LOCK_PREFIX can be predefined only for YPERF_TEST */
 #if defined(Y_LOCK_PREFIX) && !defined(YPERF_TEST)
 #error "Please define YPERF_TEST for test, or a predefined symbol conflicts ?"
 #endif
@@ -64,11 +57,7 @@ __y_begin_extern_c
 #endif
 
 #ifndef __noreturn
-#define y_noreturn              __attribute__((noreturn))
-#endif
-
-#ifndef __unreachable
-#define __unreachable()         __builtin_unreachable()
+#define __noreturn              __attribute__((noreturn))
 #endif
 
 #ifndef __printf
@@ -79,12 +68,72 @@ __y_begin_extern_c
 #define __scanf(a, b)           __attribute__((__format__(scanf, a, b)))
 #endif
 
+#ifndef __nonnull
+#define __nonnull(params)       __attribute__ ((__nonnull__ params))
+#endif
+
+#ifndef __pure
+#define __pure                  __attribute__ ((__pure__))
+#endif
+
+#ifndef __const
+#define __const                 __attribute__ ((__const__))
+#endif
+
+#ifndef __unused
+#define __unused                __attribute__((__unused__))
+#endif
+
+#ifndef __used
+#define __used                  __attribute__((__used__))
+#endif
+
+#ifndef __must_check
+#define __must_check            __attribute__((__warn_unused_result__))
+#endif
+
+#ifndef __malloc
+#define __malloc		__attribute__((__malloc__))
+#endif
+
+#ifndef __cold
+#define __cold                  __attribute__((__cold__))
+#endif
+
+#ifndef __hot
+#define __hot                   __attribute__((__hot__))
+#endif
+
+#ifndef __unreachable
+#define __unreachable()         __builtin_unreachable()
+#endif
+
+#ifndef __compile_warning
+#define __compile_warning(msg)  __attribute__((warning(msg)))
+#endif
+
+#ifndef __compile_error
+#define __compile_error(msg)    __attribute__((error(msg)))
+#endif
+
+#ifndef __inline
+#define __inline                inline
+#endif
+
 #ifndef __likely
 #define __likely(x)             __builtin_expect(!!(x), 1)
 #endif
 
 #ifndef __unlikely
 #define __unlikely(x)           __builtin_expect(!!(x), 0)
+#endif
+
+#ifndef likely
+#define likely __likely
+#endif
+
+#ifndef unlikely
+#define unlikely __unlikely
 #endif
 
 #ifndef __uninitialized_var
@@ -108,4 +157,8 @@ __y_begin_extern_c
 #define __unused(x)     ((void)(var))
 #endif
 
-__y_end_extern_c
+#ifdef __cplusplus
+#define typeof decltype
+#endif
+
+__END_DECLS

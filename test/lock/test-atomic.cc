@@ -3,7 +3,6 @@
 // #define YPERF_TEST
 // #define Y_LOCK_PREFIX ""
 #include <yperf/atomic.h>
-#include <yperf/barrier.h>
 
 #include "threadpool.h"
 

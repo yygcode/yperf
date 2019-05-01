@@ -4,8 +4,7 @@
 // Expect all fails if no lock prefix
 // #define YPERF_TEST
 // #define Y_LOCK_PREFIX ""
-#include <yperf/barrier.h>
-#include <yperf/cmpxchg.h>
+#include <yperf/base.h>
 
 #include "threadpool.h"
 

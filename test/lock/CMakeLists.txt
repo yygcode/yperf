@@ -26,7 +26,7 @@ set(TEST_LOCK_SRCS
   threadpool.c)
 
 add_executable(test-lock ${TEST_LOCK_SRCS})
-target_link_libraries(test-lock ${GTEST_LIBS} ${THREAD_LIBS})
+target_link_libraries(test-lock ${TEST_LIBS})
 # set_source_files_properties(threadpool.c PROPERTIES LANGUAGE CXX)
 # SET_SOURCE_FILES_PROPERTIES( )
 

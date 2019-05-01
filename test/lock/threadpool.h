@@ -27,9 +27,9 @@
 
 #pragma once
 
-#include <yperf/types.h>
+#include <yperf/base.h>
 
-__y_begin_extern_c
+__BEGIN_DECLS
 
 typedef struct test_threadpool test_threadpool_t;
 
@@ -48,4 +48,4 @@ bool test_threadpool_empty_all(test_threadpool_t *pool);
 void test_threadpool_wait(test_threadpool_t *pool, size_t thread_idx);
 void test_threadpool_wait_all(test_threadpool_t *pool);
 
-__y_end_extern_c
+__END_DECLS

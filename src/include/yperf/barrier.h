@@ -1,40 +1,29 @@
 /*
- * barrier.h: memory barrier in SMP system
+ * barrier.h: memory barrier
  *
  * Copyright (C) 2012-2020 yanyg (yygcode@gmail.com, cppgp@qq.com)
  *
- * Visit https://github.com/yygcode/ycc for first version.
- *
- * Assembly Tech Visit http://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; see the file COPYING, if not see
- * <http://www.gnu.org/licenses/>.
+ * SPDX-License-Identifier: GPL-2.0-or-later<https://spdx.org/licenses/>
+ * Also see https://www.gnu.org/licenses/gpl-2.0.en.html
  */
 
 #pragma once
 
-#include <yperf/types.h>
+#include <yperf/x86_64/barrier.h>
 
-__y_begin_extern_c
-
-#define y_barrier()             __asm__ volatile("": : :"memory")
-#define y_barrier_data(ptr)     __asm__ volatile("": :"r"(ptr) :"memory")
-#define y_mb()                  __asm__ volatile("mfence":::"memory")
-#define y_rmb()                 __asm__ volatile("lfence":::"memory")
-#define y_wmb()                 __asm__ volatile("sfence" ::: "memory")
-
+#define y_barrier()             asm volatile("": : :"memory")
+#define y_barrier_data(ptr)     asm volatile("": :"r"(ptr) :"memory")
 #define y_dma_rmb()             y_barrier()
 #define y_dma_wmb()             y_barrier()
 
-__y_end_extern_c
+#ifndef y_mb
+#define y_mb()                  y_barrier()
+#endif
+
+#ifndef y_rmb
+#define y_rmb()                 y_barrier()
+#endif
+
+#ifndef y_wmb
+#define y_wmb()                 y_barrier()
+#endif
