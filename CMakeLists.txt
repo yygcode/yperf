@@ -1,35 +1,31 @@
 #
-# yperf - A parallel performance library
+# yperf - A basic performance library
 #
 # Copyright (C) 2018 yonggang.yyg<yygcode@gmail>
 #
 
-project(yperf C)
+project(yperf C CXX)
+cmake_minimum_required(VERSION 3.5)
 
-cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+include (CheckLibraryExists)
+include(generic)
 
-if (NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Debug)
-endif(NOT CMAKE_BUILD_TYPE)
-# set(CMAKE_BUILD_TYPE Debug)
-set(THREAD_LIBS pthread)
+# option list
+option(BUILD_SHARED_LIBS "Build the shared library" ON)
 
-if (CMAKE_BUILD_TYPE MATCHES "Debug")
-  add_compile_options(-DDEBUG)
-endif(CMAKE_BUILD_TYPE MATCHES "Debug")
+# all targets need this include
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/include)
 
-if (CMAKE_BUILD_TYPE MATCHES "Release")
-  add_compile_options(-DNDEBUG)
-endif(CMAKE_BUILD_TYPE MATCHES "Release")
-
-message(STATUS "Build mode " ${CMAKE_BUILD_TYPE})
-
-add_compile_options(-Wall -Wextra -Werror -Wconversion -Wsign-conversion)
-add_compile_options(-D_GNU_SOURCE)
+# in generic
+generic_add_compile_options_debug_or_release()
+generic_add_compile_options_warning()
 
 include(CheckIncludeFile)
 
 add_subdirectory(src)
+
+# before add_test
+enable_testing()
 add_subdirectory(test)

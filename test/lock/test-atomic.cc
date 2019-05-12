@@ -103,7 +103,7 @@ protected:
 
 protected:
     const static size_t THREAD_COUNT = 20;
-    const static int OP_COUNT = 1000000;
+    const static size_t OP_COUNT = 1000000;
     const static int OP_STEPS = 3;
 
 protected:

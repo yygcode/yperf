@@ -12,6 +12,7 @@
 #include <yperf/barrier.h>
 #include <yperf/compiler.h>
 #include <yperf/cmpxchg.h>
+#include <yperf/errno.h>
 
 __BEGIN_DECLS
 
@@ -29,9 +30,15 @@ __BEGIN_DECLS
 
 #define COMPILE_ASSERT(cond)    static_assert((cond), # cond)
 
-#endif
+#endif /* __cplusplus */
 
 #endif /* COMPILE_ASSERT */
+
+#define __Y_ALIGN(x, a)         __Y_ALIGN_MASK(x, (typeof(x))(a) - 1)
+#define __Y_ALIGN_MASK(x, a)    (((x) + (mask)) & ~(mask))
+#ifndef ALIGN
+#define ALIGN(x, a)     __Y_ALIGN(x, a)
+#endif
 
 static __always_inline
 void __y_read_once_size(const volatile void *p, void *res, size_t size)
