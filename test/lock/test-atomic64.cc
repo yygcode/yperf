@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <limits.h>
 
 #include <gtest/gtest.h>
@@ -5,6 +7,7 @@
 // #define YPERF_TEST
 // #define Y_LOCK_PREFIX ""
 #include <yperf/atomic.h>
+#include <yperf/tsc.h>
 
 #include "threadpool.h"
 
@@ -163,6 +166,27 @@ TEST_F(TestAtomic64, sub_and_test)
     ExecTask(test_op_sub_and_test);
     EXPECT_EQ(y_atomic64_read(&mAtomic), -1000 * OP_STEPS);
     EXPECT_EQ(y_atomic64_read(&mOpAndTest), 1);
+}
+
+TEST_F(TestAtomic64, perf)
+{
+    time_t beg = time(NULL);
+    y_atomic64_set(&mAtomic, 0);
+    uint64_t i = 0;
+    for (;;)
+    {
+        ++i;
+        if (i%(1000ULL*1000) == 0)
+        {
+            time_t now = time(NULL);
+            if (now - beg >= 5)
+            {
+                break;
+            }
+        }
+        y_atomic64_inc(&mAtomic);
+    }
+    std::cout<<"x="<<(double)y_atomic64_read(&mAtomic)/(5.0)<<std::endl;
 }
 
 } // namespace

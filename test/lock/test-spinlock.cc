@@ -73,8 +73,8 @@ TEST_F(TestSpinlock, init)
 
     y_spinlock_t lock_unlocked = Y_SPINLOCK_INIT();
     y_spinlock_t lock_locked = Y_SPINLOCK_INIT_LOCKED();
-    EXPECT_EQ(lock_unlocked.lockval, Y_SPINLOCK_VAL_UNLOCKED);
-    EXPECT_EQ(lock_locked.lockval, Y_SPINLOCK_VAL_LOCKED);
+    EXPECT_EQ(lock_unlocked.lockval, Y_SPINLOCK_UNLOCKEDV);
+    EXPECT_EQ(lock_locked.lockval, Y_SPINLOCK_LOCKEDV);
 
     ret = y_spinlock_trylock(&lock_unlocked);
     EXPECT_EQ(ret, true);

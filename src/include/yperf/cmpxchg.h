@@ -12,7 +12,30 @@
 #pragma once
 
 #include <yperf/compiler.h>
-#include <yperf/x86_64/cmpxchg.h>
+
+static __always_inline bool y_cmpxchg(
+    volatile uint32_t *ptr, uint32_t oldval, uint32_t newval)
+{
+    return __atomic_compare_exchange_n(
+        ptr, &oldval, newval, false, __ATOMIC_ACQUIRE, __ATOMIC_RELAXED);
+}
+
+static __always_inline bool y_cmpxchg64(
+    volatile uint64_t *ptr, uint64_t oldval, uint64_t newval)
+{
+    return __atomic_compare_exchange_n(
+        ptr, &oldval, newval, false, __ATOMIC_ACQUIRE, __ATOMIC_RELAXED);
+}
+
+static __always_inline uint32_t y_xchg(volatile uint32_t *ptr, uint32_t val)
+{
+    return __atomic_exchange_n(ptr, val, __ATOMIC_ACQUIRE);
+}
+
+static __always_inline uint64_t y_xchg64(volatile uint64_t *ptr, uint64_t val)
+{
+    return __atomic_exchange_n(ptr, val, __ATOMIC_ACQUIRE);
+}
 
 /*
  * xchg logic:

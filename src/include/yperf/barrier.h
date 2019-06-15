@@ -9,21 +9,24 @@
 
 #pragma once
 
-#include <yperf/x86_64/barrier.h>
+#include <yperf/compiler.h>
 
-#define y_barrier()             asm volatile("": : :"memory")
-#define y_barrier_data(ptr)     asm volatile("": :"r"(ptr) :"memory")
-#define y_dma_rmb()             y_barrier()
-#define y_dma_wmb()             y_barrier()
+static __always_inline void y_mb()
+{
+    __atomic_thread_fence(__ATOMIC_ACQ_REL);
+}
 
-#ifndef y_mb
-#define y_mb()                  y_barrier()
-#endif
+static __always_inline void y_rmb()
+{
+    __atomic_thread_fence(__ATOMIC_ACQUIRE);
+}
 
-#ifndef y_rmb
-#define y_rmb()                 y_barrier()
-#endif
+static __always_inline void y_wmb()
+{
+    __atomic_thread_fence(__ATOMIC_RELEASE);
+}
 
-#ifndef y_wmb
-#define y_wmb()                 y_barrier()
-#endif
+static __always_inline void y_barrier()
+{
+    y_mb();
+}

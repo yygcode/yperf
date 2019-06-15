@@ -11,10 +11,9 @@
 
 #pragma once
 
-#include <yperf/types.h>
-#include <yperf/barrier.h>
+#include <yperf/base.h>
 
-__y_begin_extern_c
+__BEGIN_DECLS
 
 static __always_inline uint64_t y_rdtsc(void)
 {
@@ -38,4 +37,4 @@ static __always_inline uint64_t y_rdtsc_order(void)
     return y_rdtsc();
 }
 
-__y_end_extern_c
+__END_DECLS

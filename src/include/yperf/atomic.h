@@ -1,15 +1,17 @@
 /*
- * atomic.h: 32-bits atomic in SMP system
+ * atomic.h: Atomic and atomic64
  *
  * Copyright (C) 2012-2020 yanyg (yygcode@gmail.com, cppgp@qq.com)
  *
  * SPDX-License-Identifier: GPL-2.0-or-later<https://spdx.org/licenses/>
  * Also see https://www.gnu.org/licenses/gpl-2.0.en.html
+ *
+ * The file includes barrier, atomic, and cmpxchg
  */
 
 #pragma once
 
-#include <yperf/base.h>
+#include <yperf/compiler.h>
 
 __BEGIN_DECLS
 
@@ -26,123 +28,102 @@ typedef struct {
 
 static __always_inline void y_atomic_set(y_atomic_t *v, int32_t i)
 {
-    v->counter = i;
+    __atomic_store_n(&v->counter, i, __ATOMIC_RELEASE);
 }
 
 static __always_inline int y_atomic_read(const y_atomic_t *v)
 {
-    return v->counter;
-}
-
-static __always_inline void y_atomic_inc(y_atomic_t *v)
-{
-    asm volatile(Y_LOCK_PREFIX "incl %0"
-                 : "+m" (v->counter));
-}
-
-static __always_inline void y_atomic_dec(y_atomic_t *v)
-{
-    __asm__ volatile(Y_LOCK_PREFIX "decl %0"
-                     : "+m" (v->counter));
-}
-
-static __always_inline bool y_atomic_dec_and_test(y_atomic_t *v)
-{
-    char c;
-    asm volatile(Y_LOCK_PREFIX
-                 "decl %0\n\t"
-                 "sete %1\n\t"
-                 : "+m"(v->counter), "=qm"(c)
-                 :
-                 : "memory");
-    return c != 0;
+    return __atomic_load_n(&v->counter, __ATOMIC_ACQUIRE);
 }
 
 static __always_inline void y_atomic_add(y_atomic_t *v, int32_t i)
 {
-    asm volatile(Y_LOCK_PREFIX "addl %1, %0"
-                 : "+m" (v->counter)
-                 : "ir" (i));
+    (void)__atomic_add_fetch(&v->counter, i, __ATOMIC_RELAXED);
 }
 
 static __always_inline void y_atomic_sub(y_atomic_t *v, int32_t i)
 {
-    asm volatile(Y_LOCK_PREFIX "subl %1, %0"
-                 : "+m" (v->counter)
-                 : "ir" (i));
+    (void)__atomic_sub_fetch(&v->counter, i, __ATOMIC_RELAXED);
+}
+
+static __always_inline void y_atomic_inc(y_atomic_t *v)
+{
+    y_atomic_add(v, 1);
+}
+
+static __always_inline void y_atomic_dec(y_atomic_t *v)
+{
+    y_atomic_sub(v, 1);
+}
+
+static __always_inline bool y_atomic_add_and_test(y_atomic_t *v, int32_t i)
+{
+    return 0 == __atomic_add_fetch(&v->counter, i, __ATOMIC_ACQ_REL);
 }
 
 static __always_inline bool y_atomic_sub_and_test(y_atomic_t *v, int32_t i)
 {
-    char c;
-    asm volatile(Y_LOCK_PREFIX
-                 "subl %2, %0\n\t"
-                 "sete %1\n\t"
-                 : "+m"(v->counter), "=qm"(c)
-                 : "ir"(i)
-                 : "memory");
-    return c != 0;
+    return 0 == __atomic_sub_fetch(&v->counter, i, __ATOMIC_ACQ_REL);
 }
 
+static __always_inline bool y_atomic_inc_and_test(y_atomic_t *v)
+{
+    return y_atomic_add_and_test(v, 1);
+}
+
+static __always_inline bool y_atomic_dec_and_test(y_atomic_t *v)
+{
+    return y_atomic_sub_and_test(v, 1);
+}
 
 static __always_inline void y_atomic64_set(y_atomic64_t *v, int64_t i)
 {
-    v->counter = i;
+    __atomic_store_n(&v->counter, i, __ATOMIC_RELEASE);
 }
 
-static __always_inline int64_t y_atomic64_read(const y_atomic64_t *v)
+static __always_inline long y_atomic64_read(const y_atomic64_t *v)
 {
-    return v->counter;
-}
-
-static __always_inline void y_atomic64_inc(y_atomic64_t *v)
-{
-    asm volatile(Y_LOCK_PREFIX "incq %0"
-                 : "+m" (v->counter));
-}
-
-static __always_inline void y_atomic64_dec(y_atomic64_t *v)
-{
-    asm volatile(Y_LOCK_PREFIX "decq %0"
-                 : "+m" (v->counter));
-}
-
-static __always_inline bool y_atomic64_dec_and_test(y_atomic64_t *v)
-{
-    char c;
-    asm volatile(Y_LOCK_PREFIX
-                 "decq %0\n\t"
-                 "sete %1\n\t"
-                 : "+m"(v->counter), "=qm"(c)
-                 :
-                 : "memory");
-    return c != 0;
+    return __atomic_load_n(&v->counter, __ATOMIC_ACQUIRE);
 }
 
 static __always_inline void y_atomic64_add(y_atomic64_t *v, int64_t i)
 {
-    asm volatile(Y_LOCK_PREFIX "addq %1, %0"
-                 : "+m" (v->counter)
-                 : "ir" (i));
+    (void)__atomic_add_fetch(&v->counter, i, __ATOMIC_RELAXED);
 }
 
 static __always_inline void y_atomic64_sub(y_atomic64_t *v, int64_t i)
 {
-    asm volatile(Y_LOCK_PREFIX "subq %1, %0"
-                 : "+m" (v->counter)
-                 : "ir" (i));
+    (void)__atomic_sub_fetch(&v->counter, i, __ATOMIC_RELAXED);
+}
+
+static __always_inline void y_atomic64_inc(y_atomic64_t *v)
+{
+    y_atomic64_add(v, 1);
+}
+
+static __always_inline void y_atomic64_dec(y_atomic64_t *v)
+{
+    y_atomic64_sub(v, 1);
+}
+
+static __always_inline bool y_atomic64_add_and_test(y_atomic64_t *v, int64_t i)
+{
+    return 0 == __atomic_add_fetch(&v->counter, i, __ATOMIC_ACQ_REL);
 }
 
 static __always_inline bool y_atomic64_sub_and_test(y_atomic64_t *v, int64_t i)
 {
-    char c;
-    asm volatile(Y_LOCK_PREFIX
-                 "subq %2, %0\n\t"
-                 "sete %1\n\t"
-                 : "+m"(v->counter), "=qm"(c)
-                 : "ir"(i)
-                 : "memory");
-    return c != 0;
+    return 0 == __atomic_sub_fetch(&v->counter, i, __ATOMIC_ACQ_REL);
+}
+
+static __always_inline bool y_atomic64_inc_and_test(y_atomic64_t *v)
+{
+    return y_atomic64_add_and_test(v, 1);
+}
+
+static __always_inline bool y_atomic64_dec_and_test(y_atomic64_t *v)
+{
+    return y_atomic64_sub_and_test(v, 1);
 }
 
 __END_DECLS
